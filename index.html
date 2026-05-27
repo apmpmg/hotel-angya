@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ホテル行脚</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ホテル巡礼</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-  <h1>ホテル行脚</h1>
-  <p>行ったホテルを記録するサイト</p>
-</header>
+  <header>
+    <h1>ホテル巡礼</h1>
+    <p>行ったホテルを記録するサイト</p>
+  </header>
 
-<nav class="nav">
-  <button onclick="showPage('home')">ホーム</button>
-  <button onclick="showPage('search')">検索</button>
-  <button onclick="showPage('record')">記録</button>
-  <button onclick="showPage('ranking')">ランキング</button>
-  <button onclick="showPage('mypage')">マイページ</button>
-</nav>
+  <nav class="nav">
+    <button onclick="showPage('home')">ホーム</button>
+    <button onclick="showPage('search')">検索</button>
+    <button onclick="showPage('record')">記録</button>
+    <button onclick="showPage('ranking')">ランキング</button>
+    <button onclick="showPage('mypage')">マイページ</button>
+  </nav>
 
-<main id="content"></main>
+  <main id="content"></main>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
+  <script type="module" src="./firebaseConfig.js"></script>
+
 </body>
 </html>
