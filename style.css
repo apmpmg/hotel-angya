@@ -1,31 +1,102 @@
 body{
-font-family:sans-serif;
-background:#f5f5f5;
-padding:20px;
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  background:#f3f3f3;
+  margin:0;
+  padding:16px;
+  color:#222;
+}
+
+header{
+  margin-bottom:16px;
 }
 
 h1{
-font-size:28px;
+  margin:0;
+  font-size:28px;
+}
+
+header p{
+  margin:6px 0 0;
+  color:#666;
+  font-size:13px;
 }
 
 .nav{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:16px;
+  padding-bottom:4px;
 }
 
 button{
-background:#222;
-color:white;
-border:none;
-padding:10px 16px;
-border-radius:10px;
+  border:none;
+  border-radius:999px;
+  background:#222;
+  color:white;
+  padding:10px 14px;
+  font-size:14px;
+  white-space:nowrap;
 }
 
 .card{
-background:white;
-padding:16px;
-border-radius:14px;
-margin-bottom:12px;
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.hotel-card{
+  cursor:pointer;
+}
+
+.hotel-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.sub{
+  color:#666;
+  font-size:13px;
+  margin:4px 0;
+}
+
+.tag{
+  display:inline-block;
+  background:#eee;
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:12px;
+  margin-right:5px;
+  margin-top:6px;
+}
+
+input,select,textarea{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-bottom:10px;
+  font-size:15px;
+}
+
+.detail-button{
+  width:100%;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  text-align:center;
+}
+
+.stat-grid strong{
+  display:block;
+  font-size:22px;
 }
