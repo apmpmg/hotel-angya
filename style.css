@@ -50,8 +50,9 @@ button {
   border-radius: 999px;
   background: linear-gradient(135deg, #f2d7a2, #b9823b);
   color: #1b1208;
-  padding: 12px 18px;
-  font-size: 15px;
+  min-width: 58px;
+  padding: 14px;
+  font-size: 22px;
   font-weight: 800;
   white-space: nowrap;
   box-shadow: 0 8px 18px rgba(0,0,0,0.3);
@@ -104,6 +105,9 @@ input::placeholder {
 
 .card button {
   margin: 6px 6px 6px 0;
+  font-size: 15px;
+  min-width: auto;
+  padding: 12px 16px;
 }
 
 .record-item,
