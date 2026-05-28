@@ -22,20 +22,68 @@ import {
 
 import { firebaseConfig } from "./firebaseConfig.js";
 
+// =========================
+// Firebase
+// =========================
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// =========================
+// State
+// =========================
+
 const state = {
   user: null,
   hotels: [],
-  records: []
+  records: [],
+  loading: false,
+  error: ""
 };
 
 const content = document.getElementById("content");
 
+// =========================
+// Utility
+// =========================
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setLoading(text = "読み込み中...") {
+  content.innerHTML = `
+    <div class="card">
+      <p>${escapeHtml(text)}</p>
+    </div>
+  `;
+}
+
+function showError(title, error) {
+  console.error(title, error);
+
+  content.innerHTML = `
+    <div class="card">
+      <h2>エラー</h2>
+      <p>${escapeHtml(title)}</p>
+      <small>${escapeHtml(error?.message || error)}</small>
+    </div>
+  `;
+}
+
+// =========================
+// Auth監視
+// =========================
+
 onAuthStateChanged(auth, async (user) => {
   state.user = user;
+  state.error = "";
 
   if (!user) {
     state.hotels = [];
@@ -44,36 +92,65 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  await loadHotels();
-  await loadRecords();
-  renderHome();
+  try {
+    setLoading("データを読み込み中...");
+
+    await loadHotels();
+    await loadRecords();
+
+    renderHome();
+  } catch (error) {
+    showError("ログイン後のデータ読み込みに失敗しました", error);
+  }
 });
 
-async function loadHotels() {
-  const snap = await getDocs(collection(db, "hotels"));
+// =========================
+// Firestore読み込み
+// =========================
 
-  state.hotels = snap.docs.map((d) => ({
-    id: d.id,
-    ...d.data()
-  }));
+async function loadHotels() {
+  try {
+    const snap = await getDocs(collection(db, "hotels"));
+
+    state.hotels = snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    console.log("hotels:", state.hotels);
+  } catch (error) {
+    console.error("hotels読み込み失敗:", error);
+    throw error;
+  }
 }
 
 async function loadRecords() {
   if (!state.user) return;
 
-  const q = query(
-    collection(db, "records"),
-    where("uid", "==", state.user.uid),
-    orderBy("createdAt", "desc")
-  );
+  try {
+    const q = query(
+      collection(db, "records"),
+      where("uid", "==", state.user.uid),
+      orderBy("createdAt", "desc")
+    );
 
-  const snap = await getDocs(q);
+    const snap = await getDocs(q);
 
-  state.records = snap.docs.map((d) => ({
-    id: d.id,
-    ...d.data()
-  }));
+    state.records = snap.docs.map((d) => ({
+      id: d.id,
+      ...d.data()
+    }));
+
+    console.log("records:", state.records);
+  } catch (error) {
+    console.error("records読み込み失敗:", error);
+    throw error;
+  }
 }
+
+// =========================
+// Auth操作
+// =========================
 
 async function signup() {
   const email = document.getElementById("email").value.trim();
@@ -89,8 +166,12 @@ async function signup() {
     return;
   }
 
-  await createUserWithEmailAndPassword(auth, email, password);
-  alert("登録しました");
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("登録しました");
+  } catch (error) {
+    alert(error.message);
+  }
 }
 
 async function login() {
@@ -102,14 +183,20 @@ async function login() {
     return;
   }
 
-  await signInWithEmailAndPassword(auth, email, password);
-  alert("ログインしました");
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    alert(error.message);
+  }
 }
 
 async function logout() {
   await signOut(auth);
-  alert("ログアウトしました");
 }
+
+// =========================
+// Records操作
+// =========================
 
 async function addRecord(hotelId) {
   if (!state.user) {
@@ -124,30 +211,39 @@ async function addRecord(hotelId) {
     return;
   }
 
-  await addDoc(collection(db, "records"), {
-    uid: state.user.uid,
-    email: state.user.email,
-    hotelId: hotel.id,
-    hotelName: hotel.name,
-    area: hotel.area || "",
-    city: hotel.city || "",
-    createdAt: Date.now()
-  });
+  try {
+    await addDoc(collection(db, "records"), {
+      uid: state.user.uid,
+      email: state.user.email,
+      hotelId: hotel.id,
+      hotelName: hotel.name || hotel.hotelName || "名称未設定",
+      area: hotel.area || "",
+      city: hotel.city || "",
+      createdAt: Date.now()
+    });
 
-  alert("記録しました");
-
-  await loadRecords();
-  renderRecords();
+    await loadRecords();
+    renderRecords();
+  } catch (error) {
+    showError("記録に失敗しました", error);
+  }
 }
 
 async function deleteRecord(recordId) {
   if (!confirm("削除しますか？")) return;
 
-  await deleteDoc(doc(db, "records", recordId));
-
-  await loadRecords();
-  renderRecords();
+  try {
+    await deleteDoc(doc(db, "records", recordId));
+    await loadRecords();
+    renderRecords();
+  } catch (error) {
+    showError("削除に失敗しました", error);
+  }
 }
+
+// =========================
+// Page切り替え
+// =========================
 
 function showPage(page) {
   if (!state.user) {
@@ -167,27 +263,22 @@ function showPage(page) {
 function setActiveTab(page) {
   document.querySelectorAll(".nav button").forEach((button) => {
     button.classList.remove("active");
-  });
 
-  const labels = {
-    home: "🏠",
-    search: "🔍",
-    record: "📝",
-    ranking: "🏆",
-    mypage: "👤"
-  };
-
-  document.querySelectorAll(".nav button").forEach((button) => {
-    if (button.textContent.trim() === labels[page]) {
+    if (button.dataset.page === page) {
       button.classList.add("active");
     }
   });
 }
 
+// =========================
+// Render
+// =========================
+
 function renderLogin() {
   content.innerHTML = `
     <div class="card">
-      <h2>ログイン</h2>
+      <h2>ホテル巡礼</h2>
+      <p>ログインしてください</p>
 
       <input id="email" type="email" placeholder="メールアドレス">
       <input id="password" type="password" placeholder="パスワード">
@@ -202,9 +293,10 @@ function renderHome() {
   content.innerHTML = `
     <div class="card">
       <h2>ホーム</h2>
-      <p>ログイン中：${state.user.email}</p>
+      <p>ログイン中：${escapeHtml(state.user.email)}</p>
       <p>登録ホテル数：${state.hotels.length}</p>
       <p>自分の記録数：${state.records.length}</p>
+      <button onclick="showPage('search')">ホテルを探す</button>
     </div>
   `;
 
@@ -215,19 +307,31 @@ function renderSearch() {
   let html = `
     <div class="card">
       <h2>ホテル検索</h2>
+      <p>登録ホテル数：${state.hotels.length}</p>
   `;
 
   if (state.hotels.length === 0) {
-    html += `<p>ホテルデータがまだありません</p>`;
+    html += `
+      <p>ホテルデータがまだありません。</p>
+      <small>
+        Firestore の hotels コレクションにデータがあるか、読み取りルールが許可されているか確認してください。
+      </small>
+    `;
   }
 
   state.hotels.forEach((hotel) => {
+    const name = hotel.name || hotel.hotelName || hotel.title || "名称未設定";
+    const area = hotel.area || "";
+    const city = hotel.city || "";
+    const subArea = hotel.subArea || "";
+    const priceText = hotel.priceText || "";
+
     html += `
       <div class="hotel-item">
         <div>
-          <strong>${hotel.name}</strong><br>
-          <small>${hotel.area || ""} ${hotel.city || ""} ${hotel.subArea || ""}</small><br>
-          <small>${hotel.priceText || ""}</small>
+          <strong>${escapeHtml(name)}</strong><br>
+          <small>${escapeHtml(area)} ${escapeHtml(city)} ${escapeHtml(subArea)}</small><br>
+          <small>${escapeHtml(priceText)}</small>
         </div>
         <button onclick="addRecord('${hotel.id}')">記録</button>
       </div>
@@ -237,6 +341,7 @@ function renderSearch() {
   html += `</div>`;
 
   content.innerHTML = html;
+  setActiveTab("search");
 }
 
 function renderRecords() {
@@ -253,8 +358,8 @@ function renderRecords() {
     html += `
       <div class="record-item">
         <div>
-          <strong>${record.hotelName || record.hotel || "ホテル名なし"}</strong><br>
-          <small>${record.area || ""} ${record.city || ""}</small>
+          <strong>${escapeHtml(record.hotelName || record.hotel || "ホテル名なし")}</strong><br>
+          <small>${escapeHtml(record.area || "")} ${escapeHtml(record.city || "")}</small>
         </div>
         <button onclick="deleteRecord('${record.id}')">削除</button>
       </div>
@@ -264,6 +369,7 @@ function renderRecords() {
   html += `</div>`;
 
   content.innerHTML = html;
+  setActiveTab("record");
 }
 
 function renderRanking() {
@@ -274,18 +380,26 @@ function renderRanking() {
       <p>全体ランキングは後で追加。</p>
     </div>
   `;
+
+  setActiveTab("ranking");
 }
 
 function renderMyPage() {
   content.innerHTML = `
     <div class="card">
       <h2>マイページ</h2>
-      <p>${state.user.email}</p>
+      <p>${escapeHtml(state.user.email)}</p>
       <p>記録数：${state.records.length}</p>
       <button onclick="logout()">ログアウト</button>
     </div>
   `;
+
+  setActiveTab("mypage");
 }
+
+// =========================
+// window登録
+// =========================
 
 window.showPage = showPage;
 window.signup = signup;
