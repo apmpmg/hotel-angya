@@ -26,15 +26,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const hotels = [
-  "アパホテル",
-  "東横イン",
-  "ドーミーイン",
-  "ルートイン"
-];
-
 const state = {
   user: null,
+  hotels: [],
   records: []
 };
 
@@ -44,14 +38,31 @@ onAuthStateChanged(auth, async (user) => {
   state.user = user;
 
   if (!user) {
+    state.hotels = [];
     state.records = [];
     renderLogin();
     return;
   }
 
+  await loadHotels();
   await loadRecords();
   renderHome();
 });
+
+async function loadHotels() {
+  const q = query(
+    collection(db, "hotels"),
+    where("status", "==", "active"),
+    orderBy("createdAt", "desc")
+  );
+
+  const snap = await getDocs(q);
+
+  state.hotels = snap.docs.map((d) => ({
+    id: d.id,
+    ...d.data()
+  }));
+}
 
 async function loadRecords() {
   if (!state.user) return;
@@ -106,16 +117,26 @@ async function logout() {
   alert("ログアウトしました");
 }
 
-async function addRecord(hotelName) {
+async function addRecord(hotelId) {
   if (!state.user) {
     alert("ログインしてください");
+    return;
+  }
+
+  const hotel = state.hotels.find((h) => h.id === hotelId);
+
+  if (!hotel) {
+    alert("ホテル情報が見つかりません");
     return;
   }
 
   await addDoc(collection(db, "records"), {
     uid: state.user.uid,
     email: state.user.email,
-    hotel: hotelName,
+    hotelId: hotel.id,
+    hotelName: hotel.name,
+    area: hotel.area || "",
+    city: hotel.city || "",
     createdAt: Date.now()
   });
 
@@ -188,7 +209,8 @@ function renderHome() {
     <div class="card">
       <h2>ホーム</h2>
       <p>ログイン中：${state.user.email}</p>
-      <p>記録数：${state.records.length}</p>
+      <p>登録ホテル数：${state.hotels.length}</p>
+      <p>自分の記録数：${state.records.length}</p>
     </div>
   `;
 
@@ -201,12 +223,20 @@ function renderSearch() {
       <h2>ホテル検索</h2>
   `;
 
-  hotels.forEach((hotel) => {
+  if (state.hotels.length === 0) {
+    html += `<p>ホテルデータがまだありません</p>`;
+  }
+
+  state.hotels.forEach((hotel) => {
     html += `
-      <button onclick="addRecord('${hotel}')">
-        ${hotel}
-      </button>
-      <br><br>
+      <div class="hotel-item">
+        <div>
+          <strong>${hotel.name}</strong><br>
+          <small>${hotel.area || ""} ${hotel.city || ""} ${hotel.subArea || ""}</small><br>
+          <small>${hotel.priceText || ""}</small>
+        </div>
+        <button onclick="addRecord('${hotel.id}')">記録</button>
+      </div>
     `;
   });
 
@@ -227,10 +257,13 @@ function renderRecords() {
 
   state.records.forEach((record) => {
     html += `
-      <p>
-        ${record.hotel}
+      <div class="record-item">
+        <div>
+          <strong>${record.hotelName || record.hotel || "ホテル名なし"}</strong><br>
+          <small>${record.area || ""} ${record.city || ""}</small>
+        </div>
         <button onclick="deleteRecord('${record.id}')">削除</button>
-      </p>
+      </div>
     `;
   });
 
