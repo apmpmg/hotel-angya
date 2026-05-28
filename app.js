@@ -9,7 +9,7 @@ import {
   doc,
   query,
   where,
- orderBy
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -22,17 +22,9 @@ import {
 
 import { firebaseConfig } from "./firebaseConfig.js";
 
-// =========================
-// Firebase
-// =========================
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-
-// =========================
-// State
-// =========================
 
 const state = {
   user: null,
@@ -41,10 +33,6 @@ const state = {
 };
 
 const content = document.getElementById("content");
-
-// =========================
-// Utility
-// =========================
 
 function escapeHtml(value = "") {
   return String(value)
@@ -63,10 +51,6 @@ function setLoading(text = "読み込み中...") {
   `;
 }
 
-// =========================
-// Auth監視
-// =========================
-
 onAuthStateChanged(auth, async (user) => {
   state.user = user;
 
@@ -79,14 +63,10 @@ onAuthStateChanged(auth, async (user) => {
 
   try {
     setLoading("データ読み込み中...");
-
     await loadHotels();
     await loadRecords();
-
     renderHome();
   } catch (error) {
-    console.error(error);
-
     content.innerHTML = `
       <div class="card">
         <h2>エラー</h2>
@@ -96,10 +76,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// =========================
-// Firestore
-// =========================
-
 async function loadHotels() {
   const snap = await getDocs(collection(db, "hotels"));
 
@@ -107,8 +83,6 @@ async function loadHotels() {
     id: d.id,
     ...d.data()
   }));
-
-  console.log("hotels", state.hotels);
 }
 
 async function loadRecords() {
@@ -126,13 +100,7 @@ async function loadRecords() {
     id: d.id,
     ...d.data()
   }));
-
-  console.log("records", state.records);
 }
-
-// =========================
-// Auth
-// =========================
 
 async function signup() {
   const email = document.getElementById("email").value.trim();
@@ -176,10 +144,6 @@ async function logout() {
   await signOut(auth);
 }
 
-// =========================
-// Records
-// =========================
-
 async function addRecord(hotelId) {
   if (!state.user) {
     alert("ログインしてください");
@@ -198,14 +162,13 @@ async function addRecord(hotelId) {
       uid: state.user.uid,
       email: state.user.email,
       hotelId: hotel.id,
-      hotelName: hotel.name || "名称未設定",
+      hotelName: hotel.name || hotel.hotelName || "名称未設定",
       area: hotel.area || "",
       city: hotel.city || "",
       createdAt: Date.now()
     });
 
     await loadRecords();
-
     alert("記録しました");
   } catch (error) {
     alert(error.message);
@@ -217,18 +180,12 @@ async function deleteRecord(recordId) {
 
   try {
     await deleteDoc(doc(db, "records", recordId));
-
     await loadRecords();
-
     renderRecords();
   } catch (error) {
     alert(error.message);
   }
 }
-
-// =========================
-// Navigation
-// =========================
 
 function showPage(page) {
   if (!state.user) {
@@ -255,36 +212,16 @@ function setActiveTab(page) {
   });
 }
 
-// =========================
-// Render
-// =========================
-
 function renderLogin() {
   content.innerHTML = `
     <div class="card">
-
       <h2>ログイン</h2>
 
-      <input
-        id="email"
-        type="email"
-        placeholder="メールアドレス"
-      >
+      <input id="email" type="email" placeholder="メールアドレス">
+      <input id="password" type="password" placeholder="パスワード">
 
-      <input
-        id="password"
-        type="password"
-        placeholder="パスワード"
-      >
-
-      <button onclick="login()">
-        ログイン
-      </button>
-
-      <button onclick="signup()">
-        新規登録
-      </button>
-
+      <button onclick="login()">ログイン</button>
+      <button onclick="signup()">新規登録</button>
     </div>
   `;
 }
@@ -292,28 +229,15 @@ function renderLogin() {
 function renderHome() {
   content.innerHTML = `
     <div class="card">
-
       <h2>ホーム</h2>
 
-      <p>
-        ログイン中：
-        ${escapeHtml(state.user.email)}
-      </p>
-
-      <p>
-        登録ホテル数：
-        ${state.hotels.length}
-      </p>
-
-      <p>
-        自分の記録数：
-        ${state.records.length}
-      </p>
+      <p>ログイン中：${escapeHtml(state.user.email)}</p>
+      <p>登録ホテル数：${state.hotels.length}</p>
+      <p>自分の記録数：${state.records.length}</p>
 
       <button onclick="showPage('search')">
         ホテルを見る
       </button>
-
     </div>
   `;
 
@@ -323,68 +247,43 @@ function renderHome() {
 function renderSearch() {
   let html = `
     <div class="card">
-
       <h2>ホテル検索</h2>
-
-      <p>
-        登録ホテル数：
-        ${state.hotels.length}
-      </p>
+      <p>登録ホテル数：${state.hotels.length}</p>
   `;
 
   if (state.hotels.length === 0) {
-    html += `
-      <p>
-        ホテルデータがありません
-      </p>
-    `;
+    html += `<p>ホテルデータがありません</p>`;
   }
 
   state.hotels.forEach((hotel) => {
-    const name =
-      hotel.name ||
-      hotel.hotelName ||
-      "名称未設定";
-
+    const name = hotel.name || hotel.hotelName || "名称未設定";
     const area = hotel.area || "";
     const city = hotel.city || "";
     const subArea = hotel.subArea || "";
     const priceText = hotel.priceText || "";
+    const imageUrl = hotel.imageUrl || "";
 
     html += `
-      <div
-        class="hotel-item"
-        onclick="renderHotelDetail('${hotel.id}')"
-      >
+      <div class="hotel-item" onclick="renderHotelDetail('${hotel.id}')">
 
-        <div>
+        ${
+          imageUrl
+            ? `<img class="hotel-thumb" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}">`
+            : `<div class="hotel-thumb"></div>`
+        }
 
-          <strong>
-            ${escapeHtml(name)}
-          </strong>
-
-          <br>
-
+        <div class="hotel-info">
+          <strong>${escapeHtml(name)}</strong>
           <small>
             ${escapeHtml(area)}
             ${escapeHtml(city)}
             ${escapeHtml(subArea)}
           </small>
-
           <br>
-
-          <small>
-            ${escapeHtml(priceText)}
-          </small>
-
+          <small>${escapeHtml(priceText)}</small>
         </div>
 
-        <button
-          onclick="
-            event.stopPropagation();
-            addRecord('${hotel.id}')
-          "
-        >
+        <button onclick="event.stopPropagation(); addRecord('${hotel.id}')">
           記録
         </button>
 
@@ -393,7 +292,6 @@ function renderSearch() {
   });
 
   html += `</div>`;
-
   content.innerHTML = html;
 
   setActiveTab("search");
@@ -408,29 +306,26 @@ function renderHotelDetail(hotelId) {
     return;
   }
 
-  const name =
-    hotel.name ||
-    hotel.hotelName ||
-    "名称未設定";
-
+  const name = hotel.name || hotel.hotelName || "名称未設定";
   const area = hotel.area || "";
   const city = hotel.city || "";
   const subArea = hotel.subArea || "";
   const priceText = hotel.priceText || "";
-  const description =
-    hotel.description ||
-    "説明はまだありません";
+  const description = hotel.description || "説明はまだありません";
+  const imageUrl = hotel.imageUrl || "";
 
   content.innerHTML = `
     <div class="card">
 
-      <button onclick="renderSearch()">
-        ← 戻る
-      </button>
+      <button onclick="renderSearch()">← 戻る</button>
 
-      <h2>
-        ${escapeHtml(name)}
-      </h2>
+      ${
+        imageUrl
+          ? `<img class="hotel-detail-image" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}">`
+          : ""
+      }
+
+      <h2>${escapeHtml(name)}</h2>
 
       <p>
         ${escapeHtml(area)}
@@ -438,15 +333,11 @@ function renderHotelDetail(hotelId) {
         ${escapeHtml(subArea)}
       </p>
 
-      <p>
-        ${escapeHtml(priceText)}
-      </p>
+      <p>${escapeHtml(priceText)}</p>
 
       <hr>
 
-      <p>
-        ${escapeHtml(description)}
-      </p>
+      <p>${escapeHtml(description)}</p>
 
       <button onclick="addRecord('${hotel.id}')">
         このホテルを記録する
@@ -459,16 +350,11 @@ function renderHotelDetail(hotelId) {
 function renderRecords() {
   let html = `
     <div class="card">
-
       <h2>自分の記録一覧</h2>
   `;
 
   if (state.records.length === 0) {
-    html += `
-      <p>
-        記録はまだありません
-      </p>
-    `;
+    html += `<p>記録はまだありません</p>`;
   }
 
   state.records.forEach((record) => {
@@ -476,26 +362,17 @@ function renderRecords() {
       <div class="record-item">
 
         <div>
-
           <strong>
-            ${escapeHtml(
-              record.hotelName ||
-              "ホテル名なし"
-            )}
+            ${escapeHtml(record.hotelName || "ホテル名なし")}
           </strong>
-
           <br>
-
           <small>
             ${escapeHtml(record.area || "")}
             ${escapeHtml(record.city || "")}
           </small>
-
         </div>
 
-        <button
-          onclick="deleteRecord('${record.id}')"
-        >
+        <button onclick="deleteRecord('${record.id}')">
           削除
         </button>
 
@@ -504,7 +381,6 @@ function renderRecords() {
   });
 
   html += `</div>`;
-
   content.innerHTML = html;
 
   setActiveTab("record");
@@ -513,13 +389,8 @@ function renderRecords() {
 function renderRanking() {
   content.innerHTML = `
     <div class="card">
-
       <h2>ランキング</h2>
-
-      <p>
-        全体ランキングは今後追加予定
-      </p>
-
+      <p>全体ランキングは今後追加予定</p>
     </div>
   `;
 
@@ -529,31 +400,19 @@ function renderRanking() {
 function renderMyPage() {
   content.innerHTML = `
     <div class="card">
-
       <h2>マイページ</h2>
 
-      <p>
-        ${escapeHtml(state.user.email)}
-      </p>
-
-      <p>
-        記録数：
-        ${state.records.length}
-      </p>
+      <p>${escapeHtml(state.user.email)}</p>
+      <p>記録数：${state.records.length}</p>
 
       <button onclick="logout()">
         ログアウト
       </button>
-
     </div>
   `;
 
   setActiveTab("mypage");
 }
-
-// =========================
-// Window
-// =========================
 
 window.showPage = showPage;
 window.signup = signup;
