@@ -9,7 +9,8 @@ import {
   doc,
   query,
   where,
-  orderBy
+  orderBy,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -42,6 +43,19 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function normalizeHotel(hotel) {
+  return {
+    id: hotel.id,
+    name: hotel.name || "名称未設定",
+    area: hotel.area || "",
+    city: hotel.city || "",
+    subArea: hotel.subArea || "",
+    priceText: hotel.priceText || "",
+    description: hotel.description || "説明はまだありません",
+    imageUrl: hotel.imageUrl || ""
+  };
 }
 
 function setLoading(text = "読み込み中...") {
@@ -81,10 +95,12 @@ onAuthStateChanged(auth, async (user) => {
 async function loadHotels() {
   const snap = await getDocs(collection(db, "hotels"));
 
-  state.hotels = snap.docs.map((d) => ({
-    id: d.id,
-    ...d.data()
-  }));
+  state.hotels = snap.docs.map((d) =>
+    normalizeHotel({
+      id: d.id,
+      ...d.data()
+    })
+  );
 }
 
 async function loadRecords() {
@@ -164,10 +180,10 @@ async function addRecord(hotelId) {
       uid: state.user.uid,
       email: state.user.email,
       hotelId: hotel.id,
-      hotelName: hotel.name || hotel.hotelName || "名称未設定",
-      area: hotel.area || "",
-      city: hotel.city || "",
-      createdAt: Date.now()
+      hotelName: hotel.name,
+      area: hotel.area,
+      city: hotel.city,
+      createdAt: serverTimestamp()
     });
 
     await loadRecords();
@@ -216,7 +232,6 @@ function getFilteredHotels() {
   return state.hotels.filter((hotel) => {
     const text = [
       hotel.name,
-      hotel.hotelName,
       hotel.area,
       hotel.city,
       hotel.subArea,
@@ -301,7 +316,6 @@ function renderSearch() {
       >
 
       <div id="hotelSearchStatus"></div>
-
       <div id="hotelList"></div>
     </div>
   `;
@@ -339,31 +353,24 @@ function renderHotelListOnly() {
   }
 
   filteredHotels.forEach((hotel) => {
-    const name = hotel.name || hotel.hotelName || "名称未設定";
-    const area = hotel.area || "";
-    const city = hotel.city || "";
-    const subArea = hotel.subArea || "";
-    const priceText = hotel.priceText || "";
-    const imageUrl = hotel.imageUrl || "";
-
     html += `
       <div class="hotel-item" onclick="renderHotelDetail('${hotel.id}')">
 
         ${
-          imageUrl
-            ? `<img class="hotel-thumb" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}">`
+          hotel.imageUrl
+            ? `<img class="hotel-thumb" src="${escapeHtml(hotel.imageUrl)}" alt="${escapeHtml(hotel.name)}">`
             : `<div class="hotel-thumb"></div>`
         }
 
         <div class="hotel-info">
-          <strong>${escapeHtml(name)}</strong>
+          <strong>${escapeHtml(hotel.name)}</strong>
           <small>
-            ${escapeHtml(area)}
-            ${escapeHtml(city)}
-            ${escapeHtml(subArea)}
+            ${escapeHtml(hotel.area)}
+            ${escapeHtml(hotel.city)}
+            ${escapeHtml(hotel.subArea)}
           </small>
           <br>
-          <small>${escapeHtml(priceText)}</small>
+          <small>${escapeHtml(hotel.priceText)}</small>
         </div>
 
         <button onclick="event.stopPropagation(); addRecord('${hotel.id}')">
@@ -386,38 +393,30 @@ function renderHotelDetail(hotelId) {
     return;
   }
 
-  const name = hotel.name || hotel.hotelName || "名称未設定";
-  const area = hotel.area || "";
-  const city = hotel.city || "";
-  const subArea = hotel.subArea || "";
-  const priceText = hotel.priceText || "";
-  const description = hotel.description || "説明はまだありません";
-  const imageUrl = hotel.imageUrl || "";
-
   content.innerHTML = `
     <div class="card">
 
       <button onclick="renderSearch()">← 戻る</button>
 
       ${
-        imageUrl
-          ? `<img class="hotel-detail-image" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)}">`
+        hotel.imageUrl
+          ? `<img class="hotel-detail-image" src="${escapeHtml(hotel.imageUrl)}" alt="${escapeHtml(hotel.name)}">`
           : ""
       }
 
-      <h2>${escapeHtml(name)}</h2>
+      <h2>${escapeHtml(hotel.name)}</h2>
 
       <p>
-        ${escapeHtml(area)}
-        ${escapeHtml(city)}
-        ${escapeHtml(subArea)}
+        ${escapeHtml(hotel.area)}
+        ${escapeHtml(hotel.city)}
+        ${escapeHtml(hotel.subArea)}
       </p>
 
-      <p>${escapeHtml(priceText)}</p>
+      <p>${escapeHtml(hotel.priceText)}</p>
 
       <hr>
 
-      <p>${escapeHtml(description)}</p>
+      <p>${escapeHtml(hotel.description)}</p>
 
       <button onclick="addRecord('${hotel.id}')">
         このホテルを記録する
