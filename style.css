@@ -121,6 +121,12 @@ input::placeholder {
   border-bottom: none;
 }
 
+.nav button.active {
+  background: linear-gradient(135deg, #ffe0a8, #ffb347);
+  color: #111;
+  box-shadow: 0 0 18px rgba(255, 200, 120, 0.5);
+}
+
 @media (max-width: 480px) {
   header {
     padding-top: 24px;
