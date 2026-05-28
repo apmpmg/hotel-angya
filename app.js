@@ -50,13 +50,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 async function loadHotels() {
-  const q = query(
-    collection(db, "hotels"),
-    where("status", "==", "active"),
-    orderBy("createdAt", "desc")
-  );
-
-  const snap = await getDocs(q);
+  const snap = await getDocs(collection(db, "hotels"));
 
   state.hotels = snap.docs.map((d) => ({
     id: d.id,
