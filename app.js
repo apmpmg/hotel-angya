@@ -29,7 +29,8 @@ const auth = getAuth(app);
 const state = {
   user: null,
   hotels: [],
-  records: []
+  records: [],
+  searchText: ""
 };
 
 const content = document.getElementById("content");
@@ -57,6 +58,7 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) {
     state.hotels = [];
     state.records = [];
+    state.searchText = "";
     renderLogin();
     return;
   }
@@ -187,6 +189,40 @@ async function deleteRecord(recordId) {
   }
 }
 
+function updateSearchText(value) {
+  state.searchText = value;
+  renderSearch();
+}
+
+function clearSearch() {
+  state.searchText = "";
+  renderSearch();
+}
+
+function getFilteredHotels() {
+  const keyword = state.searchText.trim().toLowerCase();
+
+  if (!keyword) {
+    return state.hotels;
+  }
+
+  return state.hotels.filter((hotel) => {
+    const text = [
+      hotel.name,
+      hotel.hotelName,
+      hotel.area,
+      hotel.city,
+      hotel.subArea,
+      hotel.priceText,
+      hotel.description
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return text.includes(keyword);
+  });
+}
+
 function showPage(page) {
   if (!state.user) {
     renderLogin();
@@ -245,17 +281,37 @@ function renderHome() {
 }
 
 function renderSearch() {
+  const filteredHotels = getFilteredHotels();
+
   let html = `
     <div class="card">
       <h2>ホテル検索</h2>
-      <p>登録ホテル数：${state.hotels.length}</p>
+
+      <input
+        type="search"
+        value="${escapeHtml(state.searchText)}"
+        placeholder="ホテル名・エリアで検索"
+        oninput="updateSearchText(this.value)"
+      >
+
+      <p>
+        表示件数：${filteredHotels.length} / ${state.hotels.length}
+      </p>
+
+      ${
+        state.searchText
+          ? `<button onclick="clearSearch()">検索をクリア</button>`
+          : ""
+      }
   `;
 
   if (state.hotels.length === 0) {
     html += `<p>ホテルデータがありません</p>`;
+  } else if (filteredHotels.length === 0) {
+    html += `<p>該当するホテルがありません</p>`;
   }
 
-  state.hotels.forEach((hotel) => {
+  filteredHotels.forEach((hotel) => {
     const name = hotel.name || hotel.hotelName || "名称未設定";
     const area = hotel.area || "";
     const city = hotel.city || "";
@@ -421,3 +477,5 @@ window.logout = logout;
 window.addRecord = addRecord;
 window.deleteRecord = deleteRecord;
 window.renderHotelDetail = renderHotelDetail;
+window.updateSearchText = updateSearchText;
+window.clearSearch = clearSearch;
