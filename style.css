@@ -4,143 +4,171 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(176, 132, 76, 0.22), transparent 32%),
-    linear-gradient(180deg, #14110f 0%, #080808 100%);
-  color: #f8f3ec;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    radial-gradient(circle at top left, rgba(196, 145, 55, 0.18), transparent 35%),
+    linear-gradient(180deg, #15120d 0%, #050505 100%);
+  color: #f5f0e8;
+  min-height: 100vh;
+  padding-bottom: 110px;
 }
 
 header {
-  padding: 26px 20px 12px;
+  padding: 36px 24px 20px;
 }
 
-h1 {
-  margin: 0;
-  font-size: 31px;
+header h1 {
+  margin: 0 0 8px;
+  font-size: 34px;
+  font-weight: 800;
   letter-spacing: 0.03em;
 }
 
 header p {
-  margin: 8px 0 0;
-  color: #c9b9a3;
-  font-size: 14px;
+  margin: 0;
+  color: #cfc6b6;
+  font-size: 15px;
 }
 
-.nav {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 50;
-  display: flex;
-  justify-content: space-around;
-  gap: 6px;
-  padding: 10px;
-  border-radius: 24px;
-  background: rgba(20, 17, 15, 0.92);
-  border: 1px solid rgba(255,255,255,0.14);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+.card {
+  width: calc(100% - 32px);
+  margin: 20px auto;
+  padding: 24px 20px;
+  background: rgba(31, 29, 25, 0.92);
+  border: 1px solid rgba(255, 215, 140, 0.18);
+  border-radius: 26px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+.card h2 {
+  margin: 0 0 22px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.card p {
+  margin: 10px 0;
+  color: #e7ded0;
+  font-size: 16px;
+}
+
+input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 215, 140, 0.25);
+  background: #111;
+  color: #fff;
+  font-size: 16px;
 }
 
 button {
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #f2d7a2, #b9823b);
-  color: #1b1208;
-  min-width: 58px;
-  padding: 14px;
-  font-size: 22px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #f8d989, #b88432);
+  color: #120d05;
+  font-size: 15px;
   font-weight: 800;
-  white-space: nowrap;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(184, 132, 50, 0.25);
 }
 
 button:active {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
-#content {
-  padding: 10px 16px 120px;
+.hotel-item,
+.record-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.card {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 24px;
-  padding: 22px;
-  margin-bottom: 18px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.36);
-  backdrop-filter: blur(16px);
+.hotel-item:first-of-type,
+.record-item:first-of-type {
+  border-top: none;
 }
 
-.card h2 {
-  margin: 0 0 18px;
-  font-size: 26px;
+.hotel-item strong,
+.record-item strong {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
-.card p {
-  color: #e8ddd0;
-  font-size: 16px;
-  line-height: 1.6;
+.hotel-item small,
+.record-item small {
+  color: #bdb3a3;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-input {
-  width: 100%;
-  margin: 8px 0 12px;
-  padding: 15px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.09);
-  color: #fff;
-  font-size: 16px;
-  outline: none;
-}
-
-input::placeholder {
-  color: #b9ab9b;
-}
-
-.card button {
-  margin: 6px 6px 6px 0;
+.hotel-item button,
+.record-item button {
+  min-width: 78px;
+  padding: 11px 16px;
   font-size: 15px;
-  min-width: auto;
-  padding: 12px 16px;
+  white-space: nowrap;
 }
 
-.record-item,
-.hotel-item {
+.nav {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 18px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  gap: 8px;
+  padding: 10px;
+  background: rgba(12, 12, 12, 0.92);
+  border: 1px solid rgba(255, 215, 140, 0.18);
+  border-radius: 28px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+  z-index: 50;
 }
 
-.record-item:last-child,
-.hotel-item:last-child {
-  border-bottom: none;
+.nav button {
+  flex: 1;
+  min-width: 0;
+  padding: 13px 4px;
+  font-size: 14px;
+  border-radius: 999px;
+  background: rgba(255, 215, 140, 0.18);
+  color: #f3d48a;
+  box-shadow: none;
 }
 
 .nav button.active {
-  background: linear-gradient(135deg, #ffe0a8, #ffb347);
-  color: #111;
-  box-shadow: 0 0 18px rgba(255, 200, 120, 0.5);
+  background: linear-gradient(135deg, #ffe39a, #c18a38);
+  color: #120d05;
+  box-shadow: 0 0 18px rgba(255, 204, 100, 0.35);
 }
 
-@media (max-width: 480px) {
-  header {
-    padding-top: 24px;
-  }
-
-  h1 {
+@media (max-width: 390px) {
+  header h1 {
     font-size: 30px;
   }
 
   .card {
-    padding: 20px;
+    width: calc(100% - 24px);
+    padding: 22px 18px;
+  }
+
+  .nav {
+    left: 10px;
+    right: 10px;
+    gap: 6px;
+  }
+
+  .nav button {
+    font-size: 13px;
+    padding: 12px 2px;
   }
 }
