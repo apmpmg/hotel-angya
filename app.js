@@ -191,12 +191,19 @@ async function deleteRecord(recordId) {
 
 function updateSearchText(value) {
   state.searchText = value;
-  renderSearch();
+  renderHotelListOnly();
 }
 
 function clearSearch() {
   state.searchText = "";
-  renderSearch();
+
+  const input = document.getElementById("hotelSearchInput");
+  if (input) {
+    input.value = "";
+    input.focus();
+  }
+
+  renderHotelListOnly();
 }
 
 function getFilteredHotels() {
@@ -281,29 +288,49 @@ function renderHome() {
 }
 
 function renderSearch() {
-  const filteredHotels = getFilteredHotels();
-
-  let html = `
+  content.innerHTML = `
     <div class="card">
       <h2>ホテル検索</h2>
 
       <input
+        id="hotelSearchInput"
         type="search"
         value="${escapeHtml(state.searchText)}"
         placeholder="ホテル名・エリアで検索"
         oninput="updateSearchText(this.value)"
       >
 
-      <p>
-        表示件数：${filteredHotels.length} / ${state.hotels.length}
-      </p>
+      <div id="hotelSearchStatus"></div>
 
-      ${
-        state.searchText
-          ? `<button onclick="clearSearch()">検索をクリア</button>`
-          : ""
-      }
+      <div id="hotelList"></div>
+    </div>
   `;
+
+  renderHotelListOnly();
+  setActiveTab("search");
+}
+
+function renderHotelListOnly() {
+  const list = document.getElementById("hotelList");
+  const status = document.getElementById("hotelSearchStatus");
+
+  if (!list || !status) return;
+
+  const filteredHotels = getFilteredHotels();
+
+  status.innerHTML = `
+    <p>
+      表示件数：${filteredHotels.length} / ${state.hotels.length}
+    </p>
+
+    ${
+      state.searchText
+        ? `<button onclick="clearSearch()">検索をクリア</button>`
+        : ""
+    }
+  `;
+
+  let html = "";
 
   if (state.hotels.length === 0) {
     html += `<p>ホテルデータがありません</p>`;
@@ -347,10 +374,7 @@ function renderSearch() {
     `;
   });
 
-  html += `</div>`;
-  content.innerHTML = html;
-
-  setActiveTab("search");
+  list.innerHTML = html;
 }
 
 function renderHotelDetail(hotelId) {
