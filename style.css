@@ -4,90 +4,149 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans JP", sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(196, 145, 55, 0.18), transparent 35%),
-    linear-gradient(180deg, #15120d 0%, #050505 100%);
-  color: #f5f0e8;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Noto Sans JP",
+    sans-serif;
+
+  background: #f5f5f7;
+  color: #1f1f1f;
+
   min-height: 100vh;
   padding-bottom: 110px;
 }
 
 header {
-  padding: 36px 24px 20px;
+  padding: 34px 22px 18px;
 }
 
 header h1 {
   margin: 0 0 8px;
   font-size: 34px;
   font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #111;
 }
 
 header p {
   margin: 0;
-  color: #cfc6b6;
-  font-size: 15px;
+  color: #666;
+  font-size: 14px;
 }
 
 .card {
-  width: calc(100% - 32px);
-  margin: 20px auto;
-  padding: 24px 20px;
-  background: rgba(31, 29, 25, 0.92);
-  border: 1px solid rgba(255, 215, 140, 0.18);
-  border-radius: 26px;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  width: calc(100% - 24px);
+  margin: 16px auto;
+
+  padding: 22px 18px;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.06);
+
+  border: 1px solid #ececec;
 }
 
 .card h2 {
-  margin: 0 0 22px;
-  font-size: 28px;
+  margin: 0 0 18px;
+  font-size: 26px;
   font-weight: 800;
+  color: #111;
 }
 
 .card p {
-  color: #e7ded0;
+  color: #444;
+  line-height: 1.6;
 }
 
 input {
   width: 100%;
+
   margin: 8px 0;
+
   padding: 14px 16px;
+
   border-radius: 16px;
-  border: 1px solid rgba(255, 215, 140, 0.25);
-  background: #111;
-  color: #fff;
+
+  border: 1px solid #d9d9d9;
+
+  background: #fff;
+
+  color: #111;
+
   font-size: 16px;
+
+  outline: none;
+}
+
+input:focus {
+  border-color: #4f8cff;
+  box-shadow:
+    0 0 0 4px rgba(79, 140, 255, 0.12);
 }
 
 button {
   border: none;
+
   border-radius: 999px;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, #f8d989, #b88432);
-  color: #120d05;
-  font-size: 15px;
-  font-weight: 800;
+
+  padding: 11px 18px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 700;
+
   cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:hover {
+  opacity: 0.92;
 }
 
 .hotel-item,
 .record-item {
   display: flex;
   align-items: center;
+
   gap: 14px;
+
   padding: 16px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-top: 1px solid #ececec;
+}
+
+.hotel-item:first-child,
+.record-item:first-child {
+  border-top: none;
 }
 
 .hotel-thumb {
-  width: 74px;
-  height: 74px;
+  width: 76px;
+  height: 76px;
+
   border-radius: 18px;
+
   object-fit: cover;
-  background: #222;
+
+  background: #e9e9e9;
+
   flex-shrink: 0;
-  border: 1px solid rgba(255, 215, 140, 0.18);
 }
 
 .hotel-info {
@@ -97,7 +156,12 @@ button {
 
 .hotel-info strong {
   display: block;
-  font-size: 18px;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  color: #111;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -105,49 +169,106 @@ button {
 
 .hotel-info small,
 .record-item small {
-  color: #bdb3a3;
+  color: #666;
   font-size: 13px;
+  line-height: 1.5;
 }
 
 .hotel-item button,
 .record-item button {
-  min-width: 70px;
-  padding: 10px 14px;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .hotel-detail-image {
   width: 100%;
   max-height: 240px;
+
   object-fit: cover;
+
   border-radius: 22px;
+
   margin-bottom: 18px;
-  border: 1px solid rgba(255, 215, 140, 0.18);
+
+  background: #ececec;
 }
 
 .nav {
   position: fixed;
-  left: 16px;
-  right: 16px;
-  bottom: 18px;
+
+  left: 12px;
+  right: 12px;
+  bottom: 14px;
+
   display: flex;
   gap: 8px;
+
   padding: 10px;
-  background: rgba(12, 12, 12, 0.92);
-  border: 1px solid rgba(255, 215, 140, 0.18);
-  border-radius: 28px;
-  z-index: 50;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  backdrop-filter: blur(16px);
+
+  border-radius: 24px;
+
+  border: 1px solid #e6e6e6;
+
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08);
+
+  z-index: 100;
 }
 
 .nav button {
   flex: 1;
-  padding: 13px 4px;
-  font-size: 14px;
-  background: rgba(255, 215, 140, 0.18);
-  color: #f3d48a;
+
+  padding: 12px 4px;
+
+  border-radius: 18px;
+
+  background: transparent;
+
+  color: #555;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .nav button.active {
-  background: linear-gradient(135deg, #ffe39a, #c18a38);
-  color: #120d05;
+  background: #2563eb;
+  color: white;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ececec;
+  margin: 18px 0;
+}
+
+@media (max-width: 390px) {
+  header h1 {
+    font-size: 30px;
+  }
+
+  .card {
+    width: calc(100% - 18px);
+    padding: 18px 15px;
+  }
+
+  .hotel-thumb {
+    width: 68px;
+    height: 68px;
+  }
+
+  .hotel-info strong {
+    font-size: 16px;
+  }
+
+  .nav {
+    left: 8px;
+    right: 8px;
+  }
+
+  .nav button {
+    font-size: 12px;
+  }
 }
