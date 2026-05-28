@@ -21,7 +21,6 @@ header h1 {
   margin: 0 0 8px;
   font-size: 34px;
   font-weight: 800;
-  letter-spacing: 0.03em;
 }
 
 header p {
@@ -47,9 +46,7 @@ header p {
 }
 
 .card p {
-  margin: 10px 0;
   color: #e7ded0;
-  font-size: 16px;
 }
 
 input {
@@ -72,49 +69,60 @@ button {
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(184, 132, 50, 0.25);
-}
-
-button:active {
-  transform: scale(0.97);
 }
 
 .hotel-item,
 .record-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 14px;
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.hotel-item:first-of-type,
-.record-item:first-of-type {
-  border-top: none;
+.hotel-thumb {
+  width: 74px;
+  height: 74px;
+  border-radius: 18px;
+  object-fit: cover;
+  background: #222;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 215, 140, 0.18);
 }
 
-.hotel-item strong,
-.record-item strong {
+.hotel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hotel-info strong {
   display: block;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.35;
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.hotel-item small,
+.hotel-info small,
 .record-item small {
   color: #bdb3a3;
   font-size: 13px;
-  line-height: 1.5;
 }
 
 .hotel-item button,
 .record-item button {
-  min-width: 78px;
-  padding: 11px 16px;
-  font-size: 15px;
+  min-width: 70px;
+  padding: 10px 14px;
   white-space: nowrap;
+}
+
+.hotel-detail-image {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 22px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 215, 140, 0.18);
 }
 
 .nav {
@@ -123,52 +131,23 @@ button:active {
   right: 16px;
   bottom: 18px;
   display: flex;
-  justify-content: space-between;
   gap: 8px;
   padding: 10px;
   background: rgba(12, 12, 12, 0.92);
   border: 1px solid rgba(255, 215, 140, 0.18);
   border-radius: 28px;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
   z-index: 50;
 }
 
 .nav button {
   flex: 1;
-  min-width: 0;
   padding: 13px 4px;
   font-size: 14px;
-  border-radius: 999px;
   background: rgba(255, 215, 140, 0.18);
   color: #f3d48a;
-  box-shadow: none;
 }
 
 .nav button.active {
   background: linear-gradient(135deg, #ffe39a, #c18a38);
   color: #120d05;
-  box-shadow: 0 0 18px rgba(255, 204, 100, 0.35);
-}
-
-@media (max-width: 390px) {
-  header h1 {
-    font-size: 30px;
-  }
-
-  .card {
-    width: calc(100% - 24px);
-    padding: 22px 18px;
-  }
-
-  .nav {
-    left: 10px;
-    right: 10px;
-    gap: 6px;
-  }
-
-  .nav button {
-    font-size: 13px;
-    padding: 12px 2px;
-  }
 }
