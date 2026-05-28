@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>ホテル巡礼</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
@@ -16,11 +17,42 @@
   </header>
 
   <nav class="nav">
-    <button onclick="showPage('home')">ホーム</button>
-    <button onclick="showPage('search')">検索</button>
-    <button onclick="showPage('record')">記録</button>
-    <button onclick="showPage('ranking')">ランキング</button>
-    <button onclick="showPage('mypage')">マイページ</button>
+
+    <button
+      data-page="home"
+      onclick="showPage('home')"
+    >
+      ホーム
+    </button>
+
+    <button
+      data-page="search"
+      onclick="showPage('search')"
+    >
+      検索
+    </button>
+
+    <button
+      data-page="record"
+      onclick="showPage('record')"
+    >
+      記録
+    </button>
+
+    <button
+      data-page="ranking"
+      onclick="showPage('ranking')"
+    >
+      ランキング
+    </button>
+
+    <button
+      data-page="mypage"
+      onclick="showPage('mypage')"
+    >
+      マイページ
+    </button>
+
   </nav>
 
   <main id="content"></main>
